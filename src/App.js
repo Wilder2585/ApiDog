@@ -1,55 +1,55 @@
-import React, { useState, useEffect } from "react";
-import Quote from "./components/Quote";
-import Spinner from "./components/Spinner";
+import Card from "./components/Card";
+import Selects from "./components/Selects";
+import {useState, useEffect} from "react";
+import getDog from "./helpers/getDog";
+import Error from "./components/Error";
 
-const inicialQuote = {
-
-  text: "",
-  author: ""
-
-}
-
+const initialDog = 
+  {
+    image:"",
+    breed:{
+      id:0,
+      name: '',
+    },
+  }
 function App() {
 
+  const [dog, setDog]= useState(initialDog);
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null);
 
-  const [quote, setQuote] = useState(inicialQuote);
-  const [loading, setLoading] = useState(false);  
+  useEffect( () =>{
+    updateDog();    
+},[]);
 
-  const updateQuote = async()=>{
-    setLoading(true);
-    const url = "https://www.breakingbadapi.com/api/quote/random";
-    const res = await fetch(url);
-    const [newQuote] = await res.json(); //destructuramo con llaves, para que no aparesca en corchetes que es mas dificil manejar.
-    // hacer esto hace que la variable newQuote no imprima como array si no como un objeto.
-    
-      setQuote({
-        text: newQuote.quote,
-        author: newQuote.author
+    const updateDog = (breedId) => {
+    setLoading(true)
+    getDog(breedId).then((dogApi) =>{setDog(dogApi);
+      setLoading(false)})
+      .catch((error) => {
+        console.log(error);
+        setError("Error al cargar un perro")
+        setLoading(false)
       })
-      setLoading(false);
-  
+    
   }
 
-
-  useEffect (()=>{
-      updateQuote();  
-
-  },[])
 
     return(
       <div className="app">
         
-          <img 
-            src="https://upload.wikimedia.org/wikipedia/commons/7/77/Breaking_Bad_logo.svg"
-            alt="logo"
-          />
-          <button onClick={updateQuote}>Get another</button>
-         {
-          //esto es un operador terneario: El operador condicional (ternario) es el único operador en JavaScript que tiene tres operandos. Este operador se usa con frecuencia como atajo para la instrucción if.
-            loading ? <Spinner /> : <Quote quote={quote}/>
+        <Selects updateDog={updateDog}/>
 
-         }
+        { error && <Error error={error}/>}
+        
 
+        <Card  dog={dog} updateDog={updateDog} loading={loading}/>
+        
+
+       
+
+        
+        
 
       </div>
     
