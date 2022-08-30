@@ -14,8 +14,9 @@ const getDog = async(breedId) =>{
 
     const [data] = await res.json();
     
+   
     
-    let { url: image, breeds: [breed]} = data;
+    let { url: image, breed} = data;
 
 if (!breed) {
     breed ={
